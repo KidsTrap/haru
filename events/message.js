@@ -1,3 +1,5 @@
+const botconf = require('../config.json')
+const request = require('request-promise-native')
 const regexWebURL = require('../modules/re_weburl')
 
 module.exports = async (client, message) => {
@@ -22,6 +24,52 @@ module.exports = async (client, message) => {
 
     embed.fields.push({ 'name': 'Message content', 'value': message.content })
     embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
+
+    // Google Safe Browsing API check
+    let safebrowsingToken = botconf.safebrowsingAPI
+    if (safebrowsingToken && safebrowsingToken !== '') {
+      try {
+        let slicedArray = urlCheck.slice(0, 3)
+        let requestURL = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${safebrowsingToken}`
+        let requestBody = {
+          'client': {
+            'clientId': 'github:intrnl/haru',
+            'clientVersion': '1.0.0'
+          },
+          'threatInfo': {
+            'threatTypes': ['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE', 'POTENTIALLY_HARMFUL_APPLICATION'],
+            'platformTypes': ['ALL_PLATFORMS'],
+            'threatEntryTypes': ['URL', 'EXECUTABLE'],
+            'threatEntries': []
+          }
+        }
+
+        slicedArray.forEach(url => {
+          let pushArray = requestBody.threatInfo.threatEntries
+
+          pushArray.push({ 'url': url })
+        })
+
+        let data = await request.post({
+          url: requestURL,
+          headers: {
+            'User-Agent': 'github:intrnl/haru',
+            'Content-Type': 'application/json'
+          },
+          body: requestBody,
+          json: true
+        })
+
+        if (data.matches) {
+          embed.fields.push({ 'name': 'Google Safe Browsing', 'value': `Unsafe (${data.matches.length}/3)` })
+        } else {
+          embed.fields.push({ 'name': 'Google Safe Browsing', 'value': 'Safe (3/3)' })
+        }
+      } catch (e) {
+        console.error('Error while trying to check Safe Browsing API')
+        console.error(e)
+      }
+    }
 
     message.guild.channels.forEach(function (guildChannel) {
       if (guildChannel.id === message.channel.id) return

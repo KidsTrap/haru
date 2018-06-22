@@ -1,4 +1,3 @@
-require('log-timestamp')
 const { CommandoClient, SQLiteProvider } = require('discord.js-commando')
 const sqlite = require('sqlite')
 const path = require('path')
@@ -13,8 +12,6 @@ const init = async () => {
     disableEveryone: true,
     unknownCommandResponse: false
   })
-
-  client.conf = botconf
 
   sqlite.open(path.join(__dirname, 'data', 'settings.sqlite3'))
     .then((db) => {
@@ -40,7 +37,7 @@ const init = async () => {
     delete require.cache[require.resolve(`./events/${file}`)]
   })
 
-  client.login(client.conf.botToken)
+  client.login(botconf.botToken)
 }
 
 init()
