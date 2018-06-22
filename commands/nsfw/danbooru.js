@@ -63,10 +63,11 @@ class commandDanbooru extends Command {
       })
 
     let post
-    data.forEach(dataPost => {
-      if (dataPost.is_banned || dataPost.is_deleted || dataPost.file_url) return
-      post = dataPost
-    })
+    do {
+      var index = Math.floor(Math.random() * data.length)
+      post = data[index]
+    }
+    while (post.is_banned || post.is_deleted || !post.file_url)
 
     // Some data bodging
     switch (post.rating) {
