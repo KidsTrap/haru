@@ -70,8 +70,7 @@ module.exports = async (client, message) => {
         stringBuild += '\nSafe Browsing API only allows 3 links at a time.'
         embed.fields.push({ 'name': 'Google Safe Browsing', 'value': stringBuild })
       } catch (e) {
-        console.error('Error while trying to check Safe Browsing API')
-        console.error(e)
+        throw new Error(e)
       }
     }
 
@@ -133,7 +132,7 @@ module.exports = async (client, message) => {
         })
       })
     } catch (e) {
-      console.error(e)
+      throw new Error(e)
     }
   }
 }

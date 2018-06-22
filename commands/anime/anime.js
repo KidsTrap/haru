@@ -42,18 +42,18 @@ class commandAnime extends Command {
 
       postMsg = await msg.channel.send(`Searching for '${searchterm}', please wait.`)
       data = await anifetch.search(provider, 'anime', searchterm)
-        .catch(console.error)
+        .catch(err => { throw new Error(err) })
     } else {
       searchterm = `${provider}${searchterm !== '' ? ` ${searchterm}` : ''}`
 
       postMsg = await msg.channel.send(`Searching for '${searchterm}', please wait.`)
       data = await anifetch.search('kitsu', 'anime', searchterm)
-        .catch(console.error)
+        .catch(err => { throw new Error(err) })
     }
 
     data = await anifetch.commonfy(data)
       .then(anifetch.DiscordEmbed)
-      .catch(console.error)
+      .catch(err => { throw new Error(err) })
 
     postMsg.edit({ embed: data })
   }
