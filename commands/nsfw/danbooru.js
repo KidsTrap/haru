@@ -10,6 +10,10 @@ class commandDanbooru extends Command {
       description: 'Search through Danbooru.',
       details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://danbooru.donmai.us/wiki_pages/43043>',
       nsfw: true,
+      throttling: {
+        usages: 1,
+        duration: 2
+      },
       examples: [
         'danbooru',
         'danbooru rating:s',
@@ -27,6 +31,7 @@ class commandDanbooru extends Command {
   }
 
   async run (msg, { tags }) {
+    let postMsg = await msg.channel.send(`Searching for '${tags}', please wait.`)
     let requestURL = 'https://danbooru.donmai.us/posts.json?'
     let requestParams = {
       tags: tags,
@@ -50,7 +55,7 @@ class commandDanbooru extends Command {
     })
       .catch(err => {
         if (err.error.message === 'You cannot search for more than 2 tags at a time') {
-          return msg.channel.send('You can only search for two tags at a time.')
+          return postMsg.edit('You can only search for two tags at a time.')
         }
 
         let messages = []
@@ -59,7 +64,7 @@ class commandDanbooru extends Command {
         if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
         if (err.error.message) { messages.push(err.error.message) }
 
-        msg.channel.send(messages.join('\n'))
+        postMsg.edit(messages.join('\n'))
       })
 
     let post
@@ -113,7 +118,7 @@ class commandDanbooru extends Command {
     embed.image.url = post.file_url
     embed.timestamp = post.created_at
 
-    msg.channel.send({ embed })
+    postMsg.edit({ embed })
   }
 }
 
