@@ -1,24 +1,24 @@
 const { Command, FriendlyError } = require('discord.js-commando')
 const request = require('request-promise-native')
 
-class commandDanbooru extends Command {
+class commandYandere extends Command {
   constructor (client) {
     super(client, {
-      name: 'danbooru',
+      name: 'yandere',
       group: 'nsfw',
-      memberName: 'danbooru',
-      description: 'Search through Danbooru.',
-      details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://danbooru.donmai.us/wiki_pages/43043>',
+      memberName: 'yandere',
+      description: 'Search through yande.re.',
+      details: 'For help on tags, refer to <https://yande.re/help/tags>',
       nsfw: true,
       throttling: {
         usages: 1,
         duration: 2
       },
       examples: [
-        'danbooru',
-        'danbooru rating:s',
-        'danbooru kantai_collection',
-        'danbooru beatless rating:q'
+        'yandere',
+        'yandere rating:s',
+        'yandere kantai_collection',
+        'yandere beatless rating:q'
       ],
       args: [
         {
@@ -35,10 +35,9 @@ class commandDanbooru extends Command {
     let imageExt = ['png', 'jpg', 'gif']
     let videoExt = ['mp4', 'webm']
 
-    let requestURL = 'https://danbooru.donmai.us/posts.json?'
+    let requestURL = 'https://yande.re/post.json?'
     let requestParams = {
       tags: tags,
-      random: true,
       limit: 100
     }
 
@@ -60,15 +59,12 @@ class commandDanbooru extends Command {
         json: true
       })
         .catch(err => {
-          if (err.error.message === 'You cannot search for more than 2 tags at a time') {
-            throw new FriendlyError('You can only search for two tags at a time.')
-          }
           if (err.statusCode === 421) {
             throw new FriendlyError('We\'re currently being throttled, try again later.')
           }
 
           let messages = []
-          messages.push('there was an unhandled error while trying to fetch Danbooru,\nyou should contact the bot owner regarding this error.')
+          messages.push('there was an unhandled error while trying to fetch yande.re,\nyou should contact the bot owner regarding this error.')
 
           if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
           if (err.error.message) { messages.push(err.error.message) }
@@ -108,23 +104,15 @@ class commandDanbooru extends Command {
       video: {}
     }
 
-    embed.author.name = 'Danbooru'
-    embed.author.url = 'https://danbooru.donmai.us'
+    embed.author.name = 'yande.re'
+    embed.author.url = 'https://yande.re'
 
     embed.title = `#${post.id}`
-    embed.url = `https://danbooru.donmai.us/posts/${post.id}`
-
-    let tagsData = []
-    if (post.tag_string_general) tagsData.push(`**general**: ${truncateText(post.tag_string_general, 200)}`)
-    if (post.tag_string_character) tagsData.push(`**character**: ${truncateText(post.tag_string_character, 200)}`)
-    if (post.tag_string_copyright) tagsData.push(`**copyright**: ${truncateText(post.tag_string_copyright, 200)}`)
-    if (post.tag_string_artist) tagsData.push(`**artist**: ${truncateText(post.tag_string_artist, 200)}`)
-    if (post.tag_string_meta) tagsData.push(`**meta**: ${truncateText(post.tag_string_meta, 200)}`)
-    tagsData = tagsData.join('\n').replace(/_/g, '\\_')
+    embed.url = `https://yande.re/post/show/${post.id}`
 
     embed.fields.push({ 'name': 'Rating', 'value': post.rating, 'inline': true })
     embed.fields.push({ 'name': 'Score', 'value': post.score, 'inline': true })
-    embed.fields.push({ 'name': 'Tags', 'value': tagsData })
+    embed.fields.push({ 'name': 'Tags', 'value': truncateText(post.tags.replace(/_/g, '\\_'), 512) })
 
     let fileExt = post.file_url.split('.').pop().toLowerCase()
 
@@ -132,13 +120,13 @@ class commandDanbooru extends Command {
     if (videoExt.indexOf(fileExt) > -1) { embed.video.url = post.file_url }
 
     embed.image.url = post.file_url
-    embed.timestamp = post.created_at
+    embed.timestamp = new Date(post.created_at * 1000).toISOString()
 
     msg.channel.send({ embed })
   }
 }
 
-module.exports = commandDanbooru
+module.exports = commandYandere
 
 function truncateText (text, n) {
   return (text.length > n) ? text.substr(0, n - 1) + '\u2026' : text

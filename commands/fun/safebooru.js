@@ -1,24 +1,23 @@
 const { Command, FriendlyError } = require('discord.js-commando')
 const request = require('request-promise-native')
 
-class commandDanbooru extends Command {
+class commandSafebooru extends Command {
   constructor (client) {
     super(client, {
-      name: 'danbooru',
-      group: 'nsfw',
-      memberName: 'danbooru',
-      description: 'Search through Danbooru.',
-      details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://danbooru.donmai.us/wiki_pages/43043>',
-      nsfw: true,
+      name: 'safebooru',
+      group: 'fun',
+      memberName: 'safebooru',
+      description: 'Search through Danbooru (safe version).',
+      details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://safebooru.donmai.us/wiki_pages/43043>',
       throttling: {
         usages: 1,
         duration: 2
       },
       examples: [
-        'danbooru',
-        'danbooru rating:s',
-        'danbooru kantai_collection',
-        'danbooru beatless rating:q'
+        'safebooru',
+        'safebooru order:rank',
+        'safebooru kantai_collection',
+        'safebooru beatless order:favcount'
       ],
       args: [
         {
@@ -35,7 +34,7 @@ class commandDanbooru extends Command {
     let imageExt = ['png', 'jpg', 'gif']
     let videoExt = ['mp4', 'webm']
 
-    let requestURL = 'https://danbooru.donmai.us/posts.json?'
+    let requestURL = 'https://safebooru.donmai.us/posts.json?'
     let requestParams = {
       tags: tags,
       random: true,
@@ -68,7 +67,7 @@ class commandDanbooru extends Command {
           }
 
           let messages = []
-          messages.push('there was an unhandled error while trying to fetch Danbooru,\nyou should contact the bot owner regarding this error.')
+          messages.push('there was an unhandled error while trying to fetch Safebooru,\nyou should contact the bot owner regarding this error.')
 
           if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
           if (err.error.message) { messages.push(err.error.message) }
@@ -108,11 +107,11 @@ class commandDanbooru extends Command {
       video: {}
     }
 
-    embed.author.name = 'Danbooru'
-    embed.author.url = 'https://danbooru.donmai.us'
+    embed.author.name = 'Safebooru'
+    embed.author.url = 'https://safebooru.donmai.us'
 
     embed.title = `#${post.id}`
-    embed.url = `https://danbooru.donmai.us/posts/${post.id}`
+    embed.url = `https://safebooru.donmai.us/posts/${post.id}`
 
     let tagsData = []
     if (post.tag_string_general) tagsData.push(`**general**: ${truncateText(post.tag_string_general, 200)}`)
@@ -138,7 +137,7 @@ class commandDanbooru extends Command {
   }
 }
 
-module.exports = commandDanbooru
+module.exports = commandSafebooru
 
 function truncateText (text, n) {
   return (text.length > n) ? text.substr(0, n - 1) + '\u2026' : text
