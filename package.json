@@ -14,6 +14,7 @@
     "anifetch": "^1.2.2",
     "discord.js": "^11.3.2",
     "discord.js-commando": "^0.10.0",
+    "escape-string-regexp": "^1.0.5",
     "forever-monitor": "^1.7.1",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
