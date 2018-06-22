@@ -4,7 +4,7 @@ class commandPrefix extends Command {
   constructor (client) {
     super(client, {
       name: 'prefix',
-      group: 'util',
+      group: 'admin',
       memberName: 'prefix',
       description: 'Shows or sets the command prefix.',
       format: '[prefix/"default"/"none"]',

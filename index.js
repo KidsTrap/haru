@@ -24,7 +24,10 @@ const init = async () => {
       ['anime', 'Anime'],
       ['fun', 'Fun'],
       ['nsfw', 'NSFW'],
-      ['util', 'Utilities']
+      ['util', 'Utilities'],
+      ['mod', 'Moderation'],
+      ['admin', 'Administration'],
+      ['owner', 'Bot Owner']
     ])
     .registerCommandsIn(path.join(__dirname, 'commands'))
 

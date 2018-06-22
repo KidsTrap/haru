@@ -4,7 +4,7 @@ class ReloadCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'reload',
-      group: 'util',
+      group: 'owner',
       memberName: 'reload',
       description: 'Reloads a command or command group.',
       details: `The argument must be the name/ID (partial or whole) of a command or command group.\nProviding a command group will reload all of the commands in that group.\nOnly the bot owner(s) may use this command.`,
