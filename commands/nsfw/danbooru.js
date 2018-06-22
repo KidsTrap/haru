@@ -32,6 +32,11 @@ class commandDanbooru extends Command {
 
   async run (msg, { tags }) {
     let postMsg = await msg.channel.send(`Searching for '${tags}', please wait.`)
+
+    let ignoredExt = ['zip']
+    let imageExt = ['png', 'jpg', 'gif']
+    let videoExt = ['mp4', 'webm']
+
     let requestURL = 'https://danbooru.donmai.us/posts.json?'
     let requestParams = {
       tags: tags,
@@ -46,33 +51,37 @@ class commandDanbooru extends Command {
       if (!((Object.keys(requestParams).length - 1) === Object.keys(requestParams).indexOf(param))) { requestConstructedURL += '&' }
     })
 
-    let data = await request.get({
-      url: requestConstructedURL,
-      headers: {
-        'User-Agent': 'Haru, a general purpose Discord bot.'
-      },
-      json: true
-    })
-      .catch(err => {
-        if (err.error.message === 'You cannot search for more than 2 tags at a time') {
-          return postMsg.edit('You can only search for two tags at a time.')
-        }
-
-        let messages = []
-        messages.push('There was an unhandled error while trying to fetch Danbooru, you should contact the bot owner regarding this error.')
-
-        if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
-        if (err.error.message) { messages.push(err.error.message) }
-
-        postMsg.edit(messages.join('\n'))
-      })
-
     let post
+    let data
     do {
-      var index = Math.floor(Math.random() * data.length)
-      post = data[index]
+      data = await request.get({
+        url: requestConstructedURL,
+        headers: {
+          'User-Agent': 'Haru, a general purpose Discord bot.'
+        },
+        json: true
+      })
+        .catch(err => {
+          if (err.error.message === 'You cannot search for more than 2 tags at a time') {
+            return postMsg.edit('You can only search for two tags at a time.')
+          }
+
+          let messages = []
+          messages.push('There was an unhandled error while trying to fetch Danbooru, you should contact the bot owner regarding this error.')
+
+          if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
+          if (err.error.message) { messages.push(err.error.message) }
+
+          postMsg.edit(messages.join('\n'))
+        })
+
+      do {
+        var index = Math.floor(Math.random() * data.length)
+        post = data[index]
+      }
+      while (post.is_banned || post.is_deleted || !post.file_url || ignoredExt.indexOf(post.file_url.split('.').pop().toLowerCase()) > -1)
     }
-    while (post.is_banned || post.is_deleted || !post.file_url)
+    while (!post.id)
 
     // Some data bodging
     switch (post.rating) {
@@ -94,7 +103,8 @@ class commandDanbooru extends Command {
     const embed = {
       author: {},
       fields: [],
-      image: {}
+      image: {},
+      video: {}
     }
 
     embed.author.name = 'Danbooru'
@@ -114,6 +124,11 @@ class commandDanbooru extends Command {
     embed.fields.push({ 'name': 'Rating', 'value': post.rating, 'inline': true })
     embed.fields.push({ 'name': 'Score', 'value': post.score, 'inline': true })
     embed.fields.push({ 'name': 'Tags', 'value': tagsData })
+
+    let fileExt = post.file_url.split('.').pop().toLowerCase()
+
+    if (imageExt.indexOf(fileExt) > -1) { embed.image.url = post.file_url }
+    if (videoExt.indexOf(fileExt) > -1) { embed.video.url = post.file_url }
 
     embed.image.url = post.file_url
     embed.timestamp = post.created_at
