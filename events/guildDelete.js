@@ -1,3 +1,3 @@
 module.exports = async (client, guild) => {
-  console.log(`GUILD:LEAVE | ${guild.name}`)
+  console.log(`[${new Date().toISOString()}] GUILD:LEAVE | ${guild.name}`)
 }

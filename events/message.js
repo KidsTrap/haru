@@ -60,11 +60,15 @@ module.exports = async (client, message) => {
           json: true
         })
 
+        let stringBuild = ''
         if (data.matches) {
-          embed.fields.push({ 'name': 'Google Safe Browsing', 'value': `Unsafe (${data.matches.length}/3)` })
+          stringBuild += `Unsafe (${data.matches.length}/${slicedArray.length})`
         } else {
-          embed.fields.push({ 'name': 'Google Safe Browsing', 'value': 'Safe (3/3)' })
+          stringBuild += `Safe (${slicedArray.length}/${slicedArray.length})`
         }
+
+        stringBuild += '\nSafe Browsing API only allows 3 links at a time.'
+        embed.fields.push({ 'name': 'Google Safe Browsing', 'value': stringBuild })
       } catch (e) {
         console.error('Error while trying to check Safe Browsing API')
         console.error(e)
