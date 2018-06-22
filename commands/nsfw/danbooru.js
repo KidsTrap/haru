@@ -101,7 +101,7 @@ class commandDanbooru extends Command {
     embed.author.url = 'https://danbooru.donmai.us'
 
     embed.title = `#${post.id}`
-    embed.url = `https://danbooru.donmai.us`
+    embed.url = `https://danbooru.donmai.us/posts/${post.id}`
 
     let tagsData = []
     if (post.tag_string_general) tagsData.push(`**general**: ${truncateText(post.tag_string_general, 200)}`)
