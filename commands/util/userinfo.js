@@ -24,19 +24,17 @@ class commandUserInfo extends Command {
   }
 
   async run (msg, { user }) {
-    if (!user || user == '') user = msg.author
-    let guildMember = msg.guild.members.get(user.id)
+    if (!user || user === '') user = msg.author
+    let guildMember = msg.guild ? msg.guild.members.get(user.id) : null
     let userAvail
     let userGame
     let userGameName
-    
 
     const embed = {
       author: {},
       thumbnail: {},
       fields: []
     }
-
 
     switch (user.presence.status) {
       case 'online':
