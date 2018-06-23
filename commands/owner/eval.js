@@ -53,7 +53,7 @@ class EvalCommand extends Command {
     let hrDiff
     try {
       const hrStart = process.hrtime()
-      this.lastResult = eval(args.script)
+      this.lastResult = eval(args.script) // eslint-disable-line no-eval
       hrDiff = process.hrtime(hrStart)
     } catch (err) {
       return msg.reply(`Error while evaluating: \`${err}\``)
