@@ -16,9 +16,9 @@ class commandInfo extends Command {
 
   async run (msg) {
     const ms = this.client.uptime
-    const hrs = Math.floor(ms / (1000 * 60 * 60)).toString();
-		const min = Math.floor((ms / (1000 * 60)) % 60).toString();
-    const sec = Math.floor((ms / 1000) % 60).toString();
+    const hrs = Math.floor(ms / (1000 * 60 * 60)).toString()
+    const min = Math.floor((ms / (1000 * 60)) % 60).toString()
+    const sec = Math.floor((ms / 1000) % 60).toString()
     const time = `${hrs} hours, ${min} minutes, ${sec} seconds`
 
     const embed = {
@@ -32,7 +32,7 @@ class commandInfo extends Command {
     embed.author.icon_url = this.client.user.displayAvatarURL
     embed.author.url = 'https://github.com/intrnl/haru'
 
-    desc = []
+    let desc = []
     desc.push(`Running for ${time}`)
     desc.push(`Currently using ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB of memory`)
     embed.description = desc.join('\n')

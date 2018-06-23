@@ -68,7 +68,7 @@ class commandYandere extends Command {
 
           if (err.statusCode) messages.push(`Status code: ${err.statusCode}`)
           if (err.error.message) { messages.push(err.error.message) }
-          
+
           throw new FriendlyError(messages.join('\n'))
         })
 

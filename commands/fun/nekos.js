@@ -12,7 +12,7 @@ class commandNekos extends Command {
       examples: [
         'nekos',
         'nekos slap',
-        'nekos feed',
+        'nekos feed'
       ],
       args: [
         {
@@ -21,7 +21,7 @@ class commandNekos extends Command {
           type: 'string',
           validate: text => {
             const availSource = ['cuddle', 'feed', 'foxgirl', 'holo', 'hug', 'kemonomimi', 'kiss', 'meow', 'neko', 'pat', 'poke', 'slap', 'tickle']
-            
+
             if (availSource.indexOf(text.toLowerCase()) > -1) return true
             return 'Incorrect reaction type, head to the help page for list of reactions.'
           }

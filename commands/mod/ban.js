@@ -1,4 +1,4 @@
-const { Command, FriendlyError } = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
 
 class commandBan extends Command {
   constructor (client) {
@@ -42,7 +42,7 @@ class commandBan extends Command {
     })
   }
 
-  hasPermission(msg) {
+  hasPermission (msg) {
     if (!msg.member.hasPermission('BAN_MEMBERS')) return 'You lack the permission to ban members.'
     return true
   }
@@ -69,7 +69,7 @@ class commandBan extends Command {
     }
     log += ` - ${msg.author.username}#${msg.author.discriminator}`
 
-    await user.send(dmBan.join('\n')).catch(err => {})
+    await user.send(dmBan.join('\n')).catch(err => { msg.channel.send(`Unable to DM the user about the banning.\n\`${err}\` `) })
     await msg.guild.ban(user, {
       days: prune,
       reason: log

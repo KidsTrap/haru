@@ -2,7 +2,7 @@ const { Command } = require('discord.js-commando')
 const Fuse = require('fuse.js')
 
 class commandFindEmoji extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       name: 'findemoji',
       group: 'util',

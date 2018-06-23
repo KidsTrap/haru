@@ -1,4 +1,4 @@
-const { Command, FriendlyError } = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
 
 class commandUnban extends Command {
   constructor (client) {
@@ -35,7 +35,7 @@ class commandUnban extends Command {
     })
   }
 
-  hasPermission(msg) {
+  hasPermission (msg) {
     if (!msg.member.hasPermission('BAN_MEMBERS')) return 'You lack the permission to unban members.'
     return true
   }
@@ -50,7 +50,7 @@ class commandUnban extends Command {
     if (reason || reason !== 'null') dmBan.push(`Reason: ${reason}`)
     if (responsible) dmBan.push(`Responsible moderator: ${msg.author.username}#${msg.author.discriminator}`)
 
-    await user.send(dmBan.join('\n')).catch(err => {})
+    await user.send(dmBan.join('\n')).catch(err => { msg.channel.send(`Unable to DM the user about the unbanning.\n\`${err}\` `) })
     await msg.guild.unban(user, reason ? `${reason} - ${msg.author.username}#${msg.author.discriminator}` : `No reason given. - ${msg.author.username}#${msg.author.discriminator}`)
       .catch(err => { msg.channel.send(`Unable to unban user.\n\`\`\`${err}\`\`\``) })
       .then(_ => { msg.channel.send(`${user.username}#${user.discriminator} was unbanned.`) })
