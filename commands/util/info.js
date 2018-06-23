@@ -15,6 +15,12 @@ class commandInfo extends Command {
   }
 
   async run (msg) {
+    const ms = this.client.uptime
+    const hrs = Math.floor(ms / (1000 * 60 * 60)).toString();
+		const min = Math.floor((ms / (1000 * 60)) % 60).toString();
+    const sec = Math.floor((ms / 1000) % 60).toString();
+    const time = `${hrs} hours, ${min} minutes, ${sec} seconds`
+
     const embed = {
       author: {},
       fields: [],
@@ -26,7 +32,10 @@ class commandInfo extends Command {
     embed.author.icon_url = this.client.user.displayAvatarURL
     embed.author.url = 'https://github.com/intrnl/haru'
 
-    embed.description = `Currently using ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB of memory.`
+    desc = []
+    desc.push(`Running for ${time}`)
+    desc.push(`Currently using ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB of memory`)
+    embed.description = desc.join('\n')
 
     embed.fields.push({ 'name': 'discord.js', 'value': `[ver ${discordjs.version}](https://github.com/discordjs/discord.js)`, 'inline': true })
     embed.fields.push({ 'name': 'Commando', 'value': `[ver ${commando.version}](https://github.com/discordjs/Commando)`, 'inline': true })

@@ -32,7 +32,6 @@ class commandAnime extends Command {
   }
 
   async run (msg, { provider, searchterm }) {
-    let postMsg
     let data
     let supportedProvider = ['anilist', 'kitsu']
     provider = provider.toLowerCase()
@@ -40,13 +39,11 @@ class commandAnime extends Command {
     if (supportedProvider.indexOf(provider) > -1) {
       if (!searchterm) return msg.channel.send('You didn\'t specify a search term.')
 
-      postMsg = await msg.channel.send(`Searching for '${searchterm}', please wait.`)
       data = await anifetch.search(provider, 'anime', searchterm)
         .catch(err => { throw new Error(err) })
     } else {
       searchterm = `${provider}${searchterm !== '' ? ` ${searchterm}` : ''}`
 
-      postMsg = await msg.channel.send(`Searching for '${searchterm}', please wait.`)
       data = await anifetch.search('kitsu', 'anime', searchterm)
         .catch(err => { throw new Error(err) })
     }
@@ -55,7 +52,7 @@ class commandAnime extends Command {
       .then(anifetch.DiscordEmbed)
       .catch(err => { throw new Error(err) })
 
-    postMsg.edit({ embed: data })
+    msg.channel.send({ embed: data })
   }
 }
 

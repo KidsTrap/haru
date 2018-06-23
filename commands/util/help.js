@@ -26,8 +26,9 @@ class commandHelp extends Command {
   async run (msg, args) {
     const cmdGroup = this.client.registry.groups
     const cmdSpecific = this.client.registry.findCommands(args.command, false, msg)
+    const showAll = args.command && args.command.toLowerCase() === 'all'
 
-    if (args.command) {
+    if (args.command && !showAll) {
       if (cmdSpecific[0]) {
         let cmd = cmdSpecific[0]
 
@@ -68,7 +69,10 @@ class commandHelp extends Command {
         groupString += `**${group.name} - ** `
 
         group.commands.forEach(command => {
-          if (!command.isUsable(msg)) return
+          if (!showAll) {
+            if (!command.isUsable(msg)) return
+            if (command.nsfw && !msg.channel.nsfw) return
+          }
 
           groupString += `\`${command.name}\` `
         })
