@@ -27,7 +27,12 @@ class commandPrefix extends Command {
     // Just output the prefix
     if (!args.prefix) {
       const prefix = msg.guild ? msg.guild.commandPrefix : this.client.commandPrefix
-      return msg.reply(`${prefix ? `The command prefix is \`${prefix}\`.` : 'There is no command prefix.'}\nTo run commands, use ${msg.anyUsage('command')}.`)
+      let messages = []
+
+      messages.push(prefix ? `The command prefix is \`${prefix}\`.` : 'There is no command prefix.')
+      messages.push(`To run commands, use ${msg.anyUsage('command')}.`)
+      if (msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author)) messages.push(`To change the prefix for this guild, use ${Command.usage('prefix <new prefix>', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}`)
+      return msg.channel.send(messages.join('\n'))
     }
 
     // Check the user's permission before changing anything
