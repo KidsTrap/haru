@@ -9,7 +9,8 @@ class commandHelp extends Command {
       description: 'Shows a list of commands and details of a command',
       examples: [
         'help',
-        'help anime'
+        'help anime',
+        'help all'
       ],
       guarded: true,
       args: [
@@ -62,6 +63,11 @@ class commandHelp extends Command {
       messages.push(`Command List`)
       messages.push(`To run a command in ${msg.guild ? msg.guild.name : 'any server'}, use ${Command.usage('command', msg.guild ? msg.guild.commandPrefix : null, this.client.user)}.`)
       messages.push(`To run a command in ${msg.guild ? '' : 'this '}DM, use ${Command.usage('command', null, null)} with no prefix.`)
+      if (!showAll) {
+        messages.push(`Currently showing only usable commands, use ${Command.usage('help all', msg.guild ? msg.guild.commandPrefix : null, this.client.user)} to show all.`)
+      } else {
+        messages.push('Currently showing all commands.')
+      }
       messages.push('')
 
       cmdGroup.forEach(group => {
