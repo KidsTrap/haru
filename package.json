@@ -4,9 +4,9 @@
   "description": "Haru bot using discord.js-commando",
   "main": "index.js",
   "scripts": {
-    "lint": "standard",
+    "test": "standard",
     "lint_fix": "standard --fix",
-    "bot": "node ."
+    "start": "node ."
   },
   "author": "intrnl",
   "license": "MIT",
