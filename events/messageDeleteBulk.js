@@ -2,9 +2,10 @@ module.exports = (client, messages) => {
   var firstMessage = messages.first()
 
   if (firstMessage.guild) {
-    const embed = {}
-    embed.author = {}
-    embed.footer = {}
+    const embed = {
+      author: {},
+      footer: []
+    }
 
     embed.author.name = firstMessage.guild.name
     embed.author.icon_url = firstMessage.guild.iconURL

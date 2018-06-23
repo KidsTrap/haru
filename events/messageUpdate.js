@@ -23,6 +23,8 @@ module.exports = (client, oldMessage, newMessage) => {
       embed.fields.push({ 'name': 'Old content', 'value': "Seems to be empty here, it's probably an embed or attachment without a comment." })
     }
 
+    embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${newMessage.guild.id}/${newMessage.channel.id}/${newMessage.id}` })
+
     embed.timestamp = newMessage.editedAt
     embed.footer.text = newMessage.id
 

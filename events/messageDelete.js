@@ -1,11 +1,10 @@
 module.exports = (client, message) => {
   if (message.guild) {
-    const embed = {}
-    embed.author = {}
-    embed.fields = []
-    embed.footer = {}
-
-    if (message.member.displayColor !== 0) embed.color = message.member.displayColor
+    const embed = {
+      author: {},
+      fields: [],
+      footer: {}
+    }
 
     embed.author.name = `${message.author.username}#${message.author.discriminator}`
     embed.author.icon_url = message.author.avatarURL
