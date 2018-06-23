@@ -21,6 +21,24 @@ class commandInfo extends Command {
     const sec = Math.floor((ms / 1000) % 60).toString()
     const time = `${hrs} hours, ${min} minutes, ${sec} seconds`
 
+    let botGuilds
+    let botChannels
+    let botUsers
+
+    if (this.client.shard) {
+      let guildsEval = await this.client.shard.broadcastEval('this.guilds.size.toLocaleString()')
+      let channelsEval = await this.client.shard.broadcastEval('this.channels.size.toLocaleString()')
+      let usersEval = await this.client.shard.broadcastEval('this.users.size.toLocaleString()')
+
+      botGuilds = guildsEval.reduce((prev, val) => prev + val)
+      botChannels = channelsEval.reduce((prev, val) => prev + val)
+      botUsers = usersEval.reduce((prev, val) => prev + val)
+    } else {
+      botGuilds = this.client.guilds.size.toLocaleString()
+      botChannels = this.client.channels.size.toLocaleString()
+      botUsers = this.client.users.size.toLocaleString()
+    }
+
     const embed = {
       author: {},
       fields: [],
@@ -41,9 +59,9 @@ class commandInfo extends Command {
     embed.fields.push({ 'name': 'Commando', 'value': `[ver ${commando.version}](https://github.com/discordjs/Commando)`, 'inline': true })
     embed.fields.push({ 'name': 'Node.js', 'value': `[ver ${process.version}](https://github.com/nodejs/node)`, 'inline': true })
 
-    embed.fields.push({ 'name': 'Servers', 'value': this.client.guilds.size.toLocaleString(), 'inline': true })
-    embed.fields.push({ 'name': 'Channels', 'value': this.client.channels.size.toLocaleString(), 'inline': true })
-    embed.fields.push({ 'name': 'Members', 'value': this.client.users.size.toLocaleString(), 'inline': true })
+    embed.fields.push({ 'name': 'Servers', 'value': botGuilds, 'inline': true })
+    embed.fields.push({ 'name': 'Channels', 'value': botChannels, 'inline': true })
+    embed.fields.push({ 'name': 'Users', 'value': botUsers, 'inline': true })
 
     msg.channel.send({ embed })
   }
