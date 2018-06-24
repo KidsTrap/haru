@@ -33,6 +33,7 @@ class commandChangelog extends Command {
 
       descriptionData.push(`\`${commitHash}\` [${commitMessage}](${commitURL})`)
     })
+    descriptionData.push('[More commits...](https://github.com/intrnl/haru/commits)')
 
     const embed = {}
     embed.title = "intrnlbot's recent commits"
