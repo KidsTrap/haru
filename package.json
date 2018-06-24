@@ -12,7 +12,7 @@
   "author": "intrnl",
   "license": "MIT",
   "dependencies": {
-    "anifetch": "^1.2.2",
+    "anifetch": "^1.2.3",
     "discord.js": "^11.3.2",
     "discord.js-commando": "^0.10.0",
     "escape-string-regexp": "^1.0.5",
