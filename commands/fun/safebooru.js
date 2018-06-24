@@ -48,8 +48,10 @@ class commandSafebooru extends Command {
       if (!((Object.keys(requestParams).length - 1) === Object.keys(requestParams).indexOf(param))) { requestConstructedURL += '&' }
     })
 
-    let post
+    let post = {}
+    post.is_this_real_life = false
     let data
+
     do {
       data = await request.get({
         url: requestConstructedURL,
@@ -75,13 +77,16 @@ class commandSafebooru extends Command {
           throw new FriendlyError(messages.join('\n'))
         })
 
-      do {
-        var index = Math.floor(Math.random() * data.length)
-        post = data[index]
-      }
-      while (post.is_banned || post.is_deleted || !post.file_url || ignoredExt.indexOf(post.file_url.split('.').pop().toLowerCase()) > -1)
+      data.some(posting => {
+        if (posting.is_banned || posting.is_deleted || !posting.file_url) return false
+        if (ignoredExt.indexOf(posting.file_url.split('.').pop()) > -1) return false
+
+        post = posting
+        post.is_this_real_life = true
+        return true
+      })
     }
-    while (!post.id)
+    while (post.is_this_real_life === false)
 
     // Some data bodging
     switch (post.rating) {
