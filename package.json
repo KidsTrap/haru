@@ -2,12 +2,12 @@
   "name": "haru-commando",
   "version": "1.0.0",
   "description": "Haru bot using discord.js-commando",
-  "main": "run_shard.js",
+  "main": "index.js",
   "scripts": {
     "test": "standard",
     "lint_fix": "standard --fix",
-    "start": "node run-shard.js",
-    "start:noshard": "node index.js"
+    "start": "node .",
+    "start:noshard": "node app.js"
   },
   "author": "intrnl",
   "license": "MIT",

@@ -51,6 +51,7 @@ class commandInfo extends Command {
     embed.author.url = 'https://github.com/intrnl/haru'
 
     let desc = []
+    if (this.client.shard) desc.push(`${this.client.shard.count} shard(s) active`)
     desc.push(`Running for ${time}`)
     desc.push(`Currently using ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB of memory`)
     embed.description = desc.join('\n')

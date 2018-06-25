@@ -7,7 +7,7 @@ module.exports = async (client, message) => {
 
   // URL link
   let urlCheck = await checkWebURL(message.content)
-  if (urlCheck[0]) {
+  if (message.guild && urlCheck[0]) {
     let logText = `@${client.user.username.toLowerCase()}-message-link;`
 
     const embed = {
@@ -22,7 +22,7 @@ module.exports = async (client, message) => {
     embed.footer.text = `${message.id}`
     embed.timestamp = new Date(message.createdAt).toISOString()
 
-    embed.fields.push({ 'name': 'Message content', 'value': message.content })
+    embed.fields.push({ 'name': 'Message content', 'value': truncateText(message.content, 1024) })
     embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
 
     // Google Safe Browsing API check
@@ -108,7 +108,7 @@ module.exports = async (client, message) => {
         if (attachment.filesize < 1000000) fileSize = `${(attachment.filesize / 1000).toFixed(2)} KB`
         if (attachment.filesize < 1000) fileSize = `${attachment.filesize} bytes`
 
-        if (message.content) embed.fields.push({ 'name': 'Comment', 'value': message.content })
+        if (message.content) embed.fields.push({ 'name': 'Comment', 'value': truncateText(message.content, 1024) })
         embed.fields.push({ 'name': 'File name', 'value': attachment.filename })
         if (fileSize) embed.fields.push({ 'name': 'File size', 'value': fileSize, 'inline': true })
         embed.fields.push({ 'name': 'File URL', 'value': `[Link](${attachment.url})`, 'inline': true })
@@ -135,13 +135,92 @@ module.exports = async (client, message) => {
       throw new Error(e)
     }
   }
+
+  // Zalgo text detection
+  if (message.guild && message.guild.settings.get('abuseZalgo', false)) {
+    let logText = `@${client.user.username.toLowerCase()}-message-abuse;`
+    let zalgoCharacters = [
+      // Upper
+      '̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊',
+      '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏',
+      '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ',
+      'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚',
+      
+      // Middle
+      '̕', '̛', '̀', '́', '͘', '̡', '̢', '̧', '̨', '̴', '̵', '̶', '͏', '͜',
+      '͝', '͞', '͟', '͠', '͢', '̸', '̷', '͡', '҉',
+      
+      // Lower
+      '̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪',
+      '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ',
+      '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣',
+    ]
+
+    let splitMessage = message.content.split('')
+    let totalCharSize = splitMessage.length
+    let totalZalgoSize = 0
+    let totalNonZalgoSize = 0
+    
+    splitMessage.forEach(character => {
+      if (zalgoCharacters.indexOf(character) > -1) return totalZalgoSize++
+      return totalNonZalgoSize++
+    })
+
+    /* Zalgo text threshold
+     * Currently it only checks if the threshold is over 0.65,
+     * which covers most zalgo text except those that only use the middle character.
+     *
+     * Only upper character: ~0.68
+     * Only lower character: ~0.69
+     * Only middle character: ~0.36
+     * 
+     * Lower and middle charcater: ~0.71
+     * Upper and middle character: ~0.72
+     * Upper and lower character: ~0.74
+     * Upper, lower and middle character: ~0.75
+     */
+
+    let zalgoThreshold = totalZalgoSize / totalCharSize
+    let zalgoOver = zalgoThreshold > 0.65
+    
+    if (zalgoOver) {
+      const embed = {
+        author: {},
+        thumbnail: {},
+        fields: [],
+        footer: {}
+      }
+
+      embed.author.name = `${message.author.username}#${message.author.discriminator}`
+      embed.author.icon_url = message.author.avatarURL
+      embed.description = `<@!${message.author.id}> sent a zalgo text in <#${message.channel.id}>\n`
+      embed.footer.text = `${message.id}`
+      embed.timestamp = new Date(message.createdAt).toISOString()
+
+      embed.fields.push({ 'name': 'Message content', 'value': truncateText(message.content, 1024) })
+      embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
+
+      message.guild.channels.forEach(function (guildChannel) {
+        if (guildChannel.id === message.channel.id) return
+        if (typeof guildChannel.topic !== 'string') return
+        if (!message.guild.me.hasPermission('SEND_MESSAGES')) return
+
+        if (guildChannel.topic.includes(logText)) guildChannel.send({ embed })
+      })
+
+      if (message.guild.me.hasPermission('MANAGE_MESSAGES')) {
+        message.reply('you\'re not allowed to post zalgo text!')
+        message.delete()
+      }
+    }
+  }
 }
 
 function checkWebURL (content) {
   let urlArray = []
   content = content.replace(/\n/g, ' ')
   let msgArray = content.split(' ')
-
+  
   msgArray.forEach(word => {
     if (regexWebURL.gruber.test(word) || regexWebURL.dperini.test(word)) {
       urlArray.push(word)
@@ -149,4 +228,8 @@ function checkWebURL (content) {
   })
 
   return urlArray
+}
+
+function truncateText (text, n) {
+  return (text.length > n) ? text.substr(0, n - 1) + '\u2026' : text
 }

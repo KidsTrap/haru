@@ -30,6 +30,7 @@ class commandLogInfo extends Command {
     messages.push('')
     messages.push('**Available log events**')
     messages.push('`command-run` - logs command runs')
+    messages.push('`message-abuse` - logs message abuse like zalgo text or caps when it is enabled')
     messages.push('`message-attachment` - logs messages containing attachments')
     messages.push('`message-bulk` - logs bulk message deletion (usually done by bots pruning messages)')
     messages.push('`message-delete` - logs message deletion')
