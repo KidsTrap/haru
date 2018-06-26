@@ -90,7 +90,7 @@ class commandUserInfo extends Command {
     if (guildMember) embed.fields.push({ 'name': 'Nickname', 'value': guildMember.displayName, 'inline': true })
     embed.fields.push({ 'name': 'Account created at', 'value': user.createdAt, 'inline': true })
     if (guildMember) embed.fields.push({ 'name': 'Joined guild at', 'value': guildMember.joinedAt, 'inline': true })
-    if (guildMember) embed.fields.push({ 'name': `Roles [${guildMember.roles.size - 1}]`, 'value': guildMember.roles.filter(role => role.name !== '@everyone').map(role => role.name).join(', ') || 'No roles' })
+    if (guildMember) embed.fields.push({ 'name': `Roles [${guildMember.roles.size - 1}]`, 'value': guildMember.roles.sort((a, b) => a.position - b.position || 1).filter(role => role.name !== '@everyone').map(role => role.name).reverse().join(', ') || 'No roles' })
 
     msg.channel.send({ embed })
   }
