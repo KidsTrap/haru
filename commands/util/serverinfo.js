@@ -10,7 +10,9 @@ class commandServerInfo extends Command {
       description: 'Shows information regarding this server.',
       guildOnly: true,
       examples: [
-        'serverinfo'
+        'serverinfo',
+        'server roles',
+        'serverinfo icon'
       ],
       args: [
         {
