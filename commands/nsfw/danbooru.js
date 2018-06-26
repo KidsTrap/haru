@@ -143,9 +143,9 @@ class commandDanbooru extends Command {
       embed.footer.text = 'Video'
     }
 
-    embed.image.url = post.file_url
     embed.timestamp = post.created_at
 
+    console.log({ embed })
     msg.channel.send({ embed })
   }
 }

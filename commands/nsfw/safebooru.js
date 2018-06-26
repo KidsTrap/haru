@@ -142,7 +142,6 @@ class commandSafebooru extends Command {
       embed.footer.text = 'Video'
     }
 
-    embed.image.url = post.file_url
     embed.timestamp = post.created_at
 
     msg.channel.send({ embed })

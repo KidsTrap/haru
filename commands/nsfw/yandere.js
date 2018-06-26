@@ -127,11 +127,10 @@ class commandYandere extends Command {
       embed.footer.text = 'Image'
     }
     if (videoExt.indexOf(fileExt) > -1) {
-      embed.image.url = post.preview_file_url
+      embed.image.url = post.preview_url
       embed.footer.text = 'Video'
     }
 
-    embed.image.url = post.file_url
     embed.timestamp = new Date(post.created_at * 1000).toISOString()
 
     msg.channel.send({ embed })
