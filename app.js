@@ -6,6 +6,13 @@ const readdir = promisify(require('fs').readdir)
 
 const init = async () => {
   const botconf = require('./config.json')
+  const [dataCommando, dataScores] = await Promise.all([
+    sqlite.open(path.join(__dirname, 'data/settings.sqlite3'), { Promise }),
+    sqlite.open(path.join(__dirname, 'data/scores.sqlite3'), { Promise })
+  ])
+
+  await dataScores.run('CREATE TABLE IF NOT EXISTS scores (userID TEXT, points INTEGER, level INTEGER, lastGain TEXT)')
+
   const client = new CommandoClient({
     commandPrefix: botconf.botPrefix,
     owner: [ botconf.ownerID ],
@@ -13,10 +20,7 @@ const init = async () => {
     unknownCommandResponse: false
   })
 
-  sqlite.open(path.join(__dirname, 'data', 'settings.sqlite3'))
-    .then((db) => {
-      client.setProvider(new SQLiteProvider(db))
-    })
+  client.setProvider(new SQLiteProvider(dataCommando))
 
   client.registry
     .registerDefaultTypes()

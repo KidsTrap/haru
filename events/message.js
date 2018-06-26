@@ -1,6 +1,8 @@
 const botconf = require('../config.json')
 const request = require('request-promise-native')
 const regexWebURL = require('../modules/re_weburl')
+const sql = require('sqlite')
+const path = require('path')
 
 module.exports = async (client, message) => {
   if (message.author.bot) return
@@ -145,11 +147,11 @@ module.exports = async (client, message) => {
       '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏',
       '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ',
       'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚',
-      
+
       // Middle
       '̕', '̛', '̀', '́', '͘', '̡', '̢', '̧', '̨', '̴', '̵', '̶', '͏', '͜',
       '͝', '͞', '͟', '͠', '͢', '̸', '̷', '͡', '҉',
-      
+
       // Lower
       '̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪',
       '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ',
@@ -160,7 +162,7 @@ module.exports = async (client, message) => {
     let totalCharSize = splitMessage.length
     let totalZalgoSize = 0
     let totalNonZalgoSize = 0
-    
+
     splitMessage.forEach(character => {
       if (zalgoCharacters.indexOf(character) > -1) return totalZalgoSize++
       return totalNonZalgoSize++
@@ -173,7 +175,7 @@ module.exports = async (client, message) => {
      * Only upper character: ~0.68
      * Only lower character: ~0.69
      * Only middle character: ~0.36
-     * 
+     *
      * Lower and middle charcater: ~0.71
      * Upper and middle character: ~0.72
      * Upper and lower character: ~0.74
@@ -182,7 +184,7 @@ module.exports = async (client, message) => {
 
     let zalgoThreshold = totalZalgoSize / totalCharSize
     let zalgoOver = zalgoThreshold > 0.65
-    
+
     if (zalgoOver) {
       const embed = {
         author: {},
@@ -214,13 +216,61 @@ module.exports = async (client, message) => {
       }
     }
   }
+
+  // Leveling system
+  if (message.guild) {
+    await sql.open(path.resolve(__dirname, '../data/scores.sqlite3'))
+      .catch(err => {
+        console.error(`[${new Date().toISOString()}] Error when opening scores database: ${err}`)
+        console.error(err)
+      })
+
+    await sql.get(`SELECT * FROM scores WHERE userID = "${message.author.id}"`)
+      .catch(err => {
+        console.error(`[${new Date().toISOString()}] Error when trying to get user "${message.author.id}": ${err}`)
+        console.error(err)
+      })
+      .then(async row => {
+        let randomXp = Math.floor(Math.random() * (20 - 10 + 1)) + 10
+
+        if (!row) {
+          await sql.run('INSERT INTO scores (userID, points, level, lastGain) VALUES (?, ?, ?, ?)', [message.author.id, randomXp, 0, Date.now()])
+            .catch(err => {
+              console.error(`[${new Date().toISOString()}] Error when trying to insert user "${message.author.id}": ${err}`)
+              console.error(err)
+            })
+        } else {
+          let levelXp = (1 + row.level) * 150 + Math.floor(Math.random() * Math.floor(19))
+          let timeDiff = Date.now() - row.lastGain
+
+          if (levelXp < row.points) {
+            try {
+              await sql.run(`UPDATE scores SET level = ${row.level + 1} WHERE userID = "${message.author.id}"`)
+              message.reply(`you have leveled up to level ${row.level + 1}!`)
+            } catch (err) {
+              console.error(`[${new Date().toISOString()}] Error when trying to update level for user "${message.author.id}": ${err}`)
+              console.error(err)
+            }
+          }
+          if (timeDiff > 60000) {
+            try {
+              await sql.run(`UPDATE scores SET points = ${row.points + randomXp} WHERE userID = "${message.author.id}"`)
+              await sql.run(`UPDATE scores SET lastGain = "${Date.now()}" WHERE userID = "${message.author.id}"`)
+            } catch (err) {
+              console.error(`[${new Date().toISOString()}] Error when trying to update points for user "${message.author.id}": ${err}`)
+              console.error(err)
+            }
+          }
+        }
+      })
+  }
 }
 
 function checkWebURL (content) {
   let urlArray = []
   content = content.replace(/\n/g, ' ')
   let msgArray = content.split(' ')
-  
+
   msgArray.forEach(word => {
     if (regexWebURL.gruber.test(word) || regexWebURL.dperini.test(word)) {
       urlArray.push(word)
