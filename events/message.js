@@ -256,6 +256,7 @@ module.exports = async (client, message) => {
             try {
               await sql.run(`UPDATE scores SET level = ${row.level + 1} WHERE userID = "${message.author.id}"`)
               message.reply(`you have leveled up to level ${row.level + 1}!`)
+                .catch(_ => { console.warn(`[${new Date().toISOString()}] Failed to send level up message to user "${message.author.id}"`) })
             } catch (err) {
               console.error(`[${new Date().toISOString()}] Error when trying to update level for user "${message.author.id}": ${err}`)
               console.error(err)
