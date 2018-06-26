@@ -23,7 +23,7 @@ class commandLogInfo extends Command {
     messages.push('')
     messages.push(`Format: \`@${this.client.user.username.toLowerCase()}-event;\``)
     messages.push('')
-    messages.push(`For example, if you want to log message deletion, you should put \`@${this.client.user.username.toLowerCase()}-message-delete;\` into the channel you want to have it in.`)
+    messages.push(`For example, \`@${this.client.user.username.toLowerCase()}-message-delete;\` as the channel topic if you want to log deletions.`)
     messages.push('The use of channel topic makes it possible to have the same event log posted in multiple channels and have multiple logs within one channel.')
     messages.push('Maximum amount of event logs in one channel depends on the channel topic\'s max character length, which is 1024 characters.')
     messages.push('Make sure that the bot is allowed to read and send messages to that channel.')
