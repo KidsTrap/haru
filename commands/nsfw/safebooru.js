@@ -5,7 +5,7 @@ class commandSafebooru extends Command {
   constructor (client) {
     super(client, {
       name: 'safebooru',
-      group: 'fun',
+      group: 'nsfw',
       memberName: 'safebooru',
       description: 'Search through Danbooru (safe version).',
       details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://safebooru.donmai.us/wiki_pages/43043>',
@@ -109,7 +109,7 @@ class commandSafebooru extends Command {
       author: {},
       fields: [],
       image: {},
-      video: {}
+      footer: {}
     }
 
     embed.author.name = 'Safebooru'
@@ -132,8 +132,15 @@ class commandSafebooru extends Command {
 
     let fileExt = post.file_url.split('.').pop().toLowerCase()
 
-    if (imageExt.indexOf(fileExt) > -1) { embed.image.url = post.file_url }
-    if (videoExt.indexOf(fileExt) > -1) { embed.video.url = post.file_url }
+    embed.footer.text = `Misc (${fileExt})`
+    if (imageExt.indexOf(fileExt) > -1) {
+      embed.image.url = post.file_url
+      embed.footer.text = 'Image'
+    }
+    if (videoExt.indexOf(fileExt) > -1) {
+      embed.image.url = post.preview_file_url
+      embed.footer.text = 'Video'
+    }
 
     embed.image.url = post.file_url
     embed.timestamp = post.created_at

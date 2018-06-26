@@ -110,7 +110,7 @@ class commandDanbooru extends Command {
       author: {},
       fields: [],
       image: {},
-      video: {}
+      footer: {}
     }
 
     embed.author.name = 'Danbooru'
@@ -133,8 +133,15 @@ class commandDanbooru extends Command {
 
     let fileExt = post.file_url.split('.').pop().toLowerCase()
 
-    if (imageExt.indexOf(fileExt) > -1) { embed.image.url = post.file_url }
-    if (videoExt.indexOf(fileExt) > -1) { embed.video.url = post.file_url }
+    embed.footer.text = `Misc (${fileExt})`
+    if (imageExt.indexOf(fileExt) > -1) {
+      embed.image.url = post.file_url
+      embed.footer.text = 'Image'
+    }
+    if (videoExt.indexOf(fileExt) > -1) {
+      embed.image.url = post.preview_file_url
+      embed.footer.text = 'Video'
+    }
 
     embed.image.url = post.file_url
     embed.timestamp = post.created_at
