@@ -7,11 +7,12 @@ class commandUnban extends Command {
       group: 'mod',
       memberName: 'unban',
       description: 'Unbans someone from the server',
+      details: '`[reason]` Reason to give for the unban\n`[responsible]` Show to the unbanned user that you are responsible',
       examples: [
         'unban',
         'unban .intrnl#6939',
-        'unban intrnl',
-        'unban 443765978132643850'
+        'unban intrnl Appealed after abusing my chickens.',
+        'unban 443765978132643850 Appeal true'
       ],
       clientPermissions: ['BAN_MEMBERS'],
       guildOnly: true,
@@ -24,12 +25,14 @@ class commandUnban extends Command {
         {
           key: 'reason',
           prompt: 'What reason would you like to give for this unban?',
-          type: 'string'
+          type: 'string',
+          default: ''
         },
         {
           key: 'responsible',
           prompt: 'Do you want to put your name as the one responsible for the unban?',
-          type: 'boolean'
+          type: 'boolean',
+          default: false
         }
       ]
     })
@@ -47,11 +50,19 @@ class commandUnban extends Command {
 
     let dmBan = []
     dmBan.push(`You are unbanned from **${msg.guild.name}**`)
-    if (reason || reason !== 'null') dmBan.push(`Reason: ${reason}`)
+    if (reason || reason !== '') dmBan.push(`Reason: ${reason}`)
     if (responsible) dmBan.push(`Responsible moderator: ${msg.author.username}#${msg.author.discriminator}`)
 
+    let log = ''
+    if (reason || reason !== '') {
+      log += reason
+    } else {
+      log += 'No reason given.'
+    }
+    log += ` - ${msg.author.username}#${msg.author.discriminator}`
+
     await user.send(dmBan.join('\n')).catch(err => { msg.channel.send(`Unable to DM the user about the unbanning.\n\`${err}\` `) })
-    await msg.guild.unban(user, reason ? `${reason} - ${msg.author.username}#${msg.author.discriminator}` : `No reason given. - ${msg.author.username}#${msg.author.discriminator}`)
+    await msg.guild.unban(user, log)
       .catch(err => { msg.channel.send(`Unable to unban user.\n\`\`\`${err}\`\`\``) })
       .then(_ => { msg.channel.send(`${user.username}#${user.discriminator} was unbanned.`) })
   }
