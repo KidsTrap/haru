@@ -26,8 +26,9 @@ const init = async () => {
   client.registry
     .registerDefaultTypes()
     .registerGroups([
-      ['anime', 'Anime'],
+      ['social', 'Social']
       ['fun', 'Fun'],
+      ['anime', 'Anime'],
       ['nsfw', 'NSFW'],
       ['util', 'Utilities'],
       ['mod', 'Moderation'],
