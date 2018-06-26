@@ -27,13 +27,18 @@ class commandServerInfo extends Command {
     const embed = {
       author: {},
       thumbnail: {},
-      fields: []
+      fields: [],
+      image: {}
     }
     let guild = msg.guild
 
     if (type.toLowerCase() === 'roles') {
       embed.title = `Roles [${guild.roles.size}]`
       embed.description = guild.roles.sort((a, b) => a.position - b.position || 1).map(role => role.name).reverse().join(', ') || 'No roles'
+      return msg.channel.send({ embed })
+    }
+    if (type.toLowerCase() === 'icon') {
+      embed.image.url = guild.iconURL
       return msg.channel.send({ embed })
     }
 
