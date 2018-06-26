@@ -1,11 +1,12 @@
+require('dotenv').config()
 const { CommandoClient, SQLiteProvider } = require('discord.js-commando')
 const sqlite = require('sqlite')
 const path = require('path')
 const { promisify } = require('util')
 const readdir = promisify(require('fs').readdir)
 
+if (!process.env.botToken || !process.env.botPrefix || !process.env.ownerID) throw new Error('no env config found.')
 const init = async () => {
-  const botconf = require('./config.json')
   const [dataCommando, dataScores] = await Promise.all([
     sqlite.open(path.join(__dirname, 'data/settings.sqlite3'), { Promise }),
     sqlite.open(path.join(__dirname, 'data/scores.sqlite3'), { Promise })
@@ -14,8 +15,8 @@ const init = async () => {
   await dataScores.run('CREATE TABLE IF NOT EXISTS scores (userID TEXT, points INTEGER, level INTEGER, lastGain TEXT)')
 
   const client = new CommandoClient({
-    commandPrefix: botconf.botPrefix,
-    owner: [ botconf.ownerID ],
+    commandPrefix: process.env.botPrefix,
+    owner: [ process.env.ownerID ],
     disableEveryone: true,
     unknownCommandResponse: false
   })
@@ -44,7 +45,7 @@ const init = async () => {
     delete require.cache[require.resolve(`./events/${file}`)]
   })
 
-  client.login(botconf.botToken)
+  client.login(process.env.botToken)
 }
 
 init()

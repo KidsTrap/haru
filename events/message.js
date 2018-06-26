@@ -1,4 +1,3 @@
-const botconf = require('../config.json')
 const request = require('request-promise-native')
 const regexWebURL = require('../modules/re_weburl')
 const sql = require('sqlite')
@@ -28,7 +27,7 @@ module.exports = async (client, message) => {
     embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
 
     // Google Safe Browsing API check
-    let safebrowsingToken = botconf.safebrowsingAPI
+    let safebrowsingToken = process.env.safebrowsingAPI
     if (safebrowsingToken && safebrowsingToken !== '') {
       try {
         let slicedArray = urlCheck.slice(0, 3)

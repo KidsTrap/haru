@@ -1,4 +1,4 @@
 node_modules/ 
-/config.json
+/.env
 /data/*.sqlite3
 /data/*.sqlite

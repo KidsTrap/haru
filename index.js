@@ -1,7 +1,9 @@
-const botconf = require('./config.json')
+require('dotenv').config()
+if (!process.env.botToken || !process.env.botPrefix || !process.env.ownerID) throw new Error('no env config found.')
+
 const { ShardingManager } = require('discord.js')
 const manager = new ShardingManager('./app.js', {
-  token: botconf.botToken
+  token: process.env.botToken
 })
 
 manager.spawn()
