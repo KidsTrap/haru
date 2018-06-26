@@ -145,7 +145,6 @@ class commandDanbooru extends Command {
 
     embed.timestamp = post.created_at
 
-    console.log({ embed })
     msg.channel.send({ embed })
   }
 }
