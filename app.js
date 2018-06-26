@@ -7,9 +7,8 @@ const readdir = promisify(require('fs').readdir)
 
 if (!process.env.botToken || !process.env.botPrefix || !process.env.ownerID) throw new Error('no env config found.')
 const init = async () => {
-  const [dataCommando, dataScores] = await Promise.all([
+  const [dataCommando] = await Promise.all([
     sqlite.open(path.join(__dirname, 'data/settings.sqlite3'), { Promise }),
-    sqlite.open(path.join(__dirname, 'data/scores.sqlite3'), { Promise })
   ])
 
   await dataScores.run('CREATE TABLE IF NOT EXISTS scores (userID TEXT, points INTEGER, level INTEGER, lastGain TEXT)')
@@ -26,7 +25,6 @@ const init = async () => {
   client.registry
     .registerDefaultTypes()
     .registerGroups([
-      ['social', 'Social'],
       ['fun', 'Fun'],
       ['anime', 'Anime'],
       ['nsfw', 'NSFW'],

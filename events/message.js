@@ -225,55 +225,6 @@ module.exports = async (client, message) => {
       }
     }
   }
-
-  // Leveling system
-  if (message.guild) {
-    await sql.open(path.resolve(__dirname, '../data/scores.sqlite3'))
-      .catch(err => {
-        console.error(`[${new Date().toISOString()}] Error when opening scores database: ${err}`)
-        console.error(err)
-      })
-
-    await sql.get(`SELECT * FROM scores WHERE userID = "${message.author.id}"`)
-      .catch(err => {
-        console.error(`[${new Date().toISOString()}] Error when trying to get user "${message.author.id}": ${err}`)
-        console.error(err)
-      })
-      .then(async row => {
-        let randomXp = Math.floor(Math.random() * (20 - 10 + 1)) + 10
-
-        if (!row) {
-          await sql.run('INSERT INTO scores (userID, points, level, lastGain) VALUES (?, ?, ?, ?)', [message.author.id, randomXp, 0, Date.now()])
-            .catch(err => {
-              console.error(`[${new Date().toISOString()}] Error when trying to insert user "${message.author.id}": ${err}`)
-              console.error(err)
-            })
-        } else {
-          let levelXp = (1 + row.level) * 150 + Math.floor(Math.random() * Math.floor(19))
-          let timeDiff = Date.now() - row.lastGain
-
-          if (levelXp < row.points) {
-            try {
-              await sql.run(`UPDATE scores SET level = ${row.level + 1} WHERE userID = "${message.author.id}"`)
-              message.reply(`you have leveled up to level ${row.level + 1}!`)
-                .catch(_ => { console.warn(`[${new Date().toISOString()}] Failed to send level up message to user "${message.author.id}"`) })
-            } catch (err) {
-              console.error(`[${new Date().toISOString()}] Error when trying to update level for user "${message.author.id}": ${err}`)
-              console.error(err)
-            }
-          }
-          if (timeDiff > 60000) {
-            try {
-              await sql.run(`UPDATE scores SET points = ${row.points + randomXp} WHERE userID = "${message.author.id}"`)
-              await sql.run(`UPDATE scores SET lastGain = "${Date.now()}" WHERE userID = "${message.author.id}"`)
-            } catch (err) {
-              console.error(`[${new Date().toISOString()}] Error when trying to update points for user "${message.author.id}": ${err}`)
-              console.error(err)
-            }
-          }
-        }
-      })
-  }
 }
 
 function checkWebURL (content) {
