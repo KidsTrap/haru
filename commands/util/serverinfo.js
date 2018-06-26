@@ -4,6 +4,7 @@ class commandServerInfo extends Command {
   constructor (client) {
     super(client, {
       name: 'serverinfo',
+      aliases: ['server'],
       group: 'util',
       memberName: 'serverinfo',
       description: 'Shows information regarding this server.',
