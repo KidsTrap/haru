@@ -77,9 +77,10 @@ module.exports = async (client, message) => {
     }
 
     message.guild.channels.forEach(function (guildChannel) {
+      if (guildChannel.type !== 'text') return
       if (guildChannel.id === message.channel.id) return
       if (typeof guildChannel.topic !== 'string') return
-      if (!message.guild.me.hasPermission('SEND_MESSAGES')) return
+      if (!guildChannel.permissionsFor(client.user.id).has(['VIEW_CHANNEL', 'SEND_MESSAGES'])) return
 
       if (guildChannel.topic.includes(logText)) guildChannel.send({ embed })
     })
@@ -126,9 +127,10 @@ module.exports = async (client, message) => {
         embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
 
         message.guild.channels.forEach(function (guildChannel) {
+          if (guildChannel.type !== 'text') return
           if (guildChannel.id === message.channel.id) return
           if (typeof guildChannel.topic !== 'string') return
-          if (!message.guild.me.hasPermission('SEND_MESSAGES')) return
+          if (!guildChannel.permissionsFor(client.user.id).has(['VIEW_CHANNEL', 'SEND_MESSAGES'])) return
 
           if (guildChannel.topic.includes(logText)) guildChannel.send({ embed })
         })
@@ -139,7 +141,10 @@ module.exports = async (client, message) => {
   }
 
   // Zalgo text detection
-  if (message.guild && message.guild.settings.get('abuseZalgo', false)) {
+  let optionCheckZalgo = message.guild.settings.get('checkZalgo', false)
+  let optionAbuseZalgo = message.guild.settings.get('abuseZalgo', false)
+
+  if (message.guild && (optionCheckZalgo || optionAbuseZalgo)) {
     let logText = `@${client.user.username.toLowerCase()}-message-abuse;`
     let zalgoCharacters = [
       // Upper
@@ -155,7 +160,7 @@ module.exports = async (client, message) => {
       // Lower
       '̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪',
       '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ',
-      '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣',
+      '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'
     ]
 
     let splitMessage = message.content.split('')
@@ -185,7 +190,8 @@ module.exports = async (client, message) => {
     let zalgoThreshold = totalZalgoSize / totalCharSize
     let zalgoOver = zalgoThreshold > 0.65
 
-    if (zalgoOver) {
+    // Send a log if the `checkZalgo` is enabled
+    if (zalgoOver && optionCheckZalgo) {
       const embed = {
         author: {},
         thumbnail: {},
@@ -203,13 +209,17 @@ module.exports = async (client, message) => {
       embed.fields.push({ 'name': 'Jump link', 'value': `https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id}` })
 
       message.guild.channels.forEach(function (guildChannel) {
+        if (guildChannel.type !== 'text') return
         if (guildChannel.id === message.channel.id) return
         if (typeof guildChannel.topic !== 'string') return
-        if (!message.guild.me.hasPermission('SEND_MESSAGES')) return
+        if (!guildChannel.permissionsFor(client.user.id).has(['VIEW_CHANNEL', 'SEND_MESSAGES'])) return
 
         if (guildChannel.topic.includes(logText)) guildChannel.send({ embed })
       })
+    }
 
+    // Delete the message if `abuseZalgo` is enabled
+    if (zalgoOver && optionAbuseZalgo) {
       if (message.guild.me.hasPermission('MANAGE_MESSAGES')) {
         message.reply('you\'re not allowed to post zalgo text!')
         message.delete()

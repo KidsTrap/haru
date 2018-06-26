@@ -23,9 +23,10 @@ module.exports = (client, message) => {
     var logText = `@${client.user.username.toLowerCase()}-message-delete;`
 
     message.guild.channels.forEach(function (guildChannel) {
+      if (guildChannel.type !== 'text') return
       if (guildChannel.id === message.channel.id) return
       if (typeof guildChannel.topic !== 'string') return
-      if (!message.guild.me.hasPermission('SEND_MESSAGES')) return
+      if (!guildChannel.permissionsFor(client.user.id).has(['VIEW_CHANNEL', 'SEND_MESSAGES'])) return
 
       if (guildChannel.topic.includes(logText)) guildChannel.send({ embed })
     })
