@@ -61,7 +61,6 @@ class commandServerInfo extends Command {
     channelData.push(`${guild.channels.filter(channel => channel.type === 'text').size} text channels`)
     channelData.push(`${guild.channels.filter(channel => channel.type === 'voice').size} voice channels`)
 
-    console.log(guild.members.filter(user => user.presence.status !== 'offline'))
     embed.fields.push({ 'name': 'Verification Level', 'value': guildVerificationText })
     embed.fields.push({ 'name': 'Region', 'value': guild.region, 'inline': true })
     embed.fields.push({ 'name': `Members [${guild.members.size}]`, 'value': guild.members.filter(user => user.presence.status !== 'offline').size + ' online', 'inline': true })
