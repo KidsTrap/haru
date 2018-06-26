@@ -64,7 +64,7 @@ class commandServerInfo extends Command {
     embed.fields.push({ 'name': 'Verification Level', 'value': guildVerificationText })
     embed.fields.push({ 'name': 'Region', 'value': guild.region, 'inline': true })
     embed.fields.push({ 'name': `Members [${guild.members.size}]`, 'value': guild.members.filter(user => user.presence.status !== 'offline').size + ' online', 'inline': true })
-    embed.fields.push({ 'name': `Channels [${guild.channels.size}]`, 'value': channelData.join('\n') })
+    embed.fields.push({ 'name': `Channels [${guild.channels.size}]`, 'value': channelData.join('\n'), 'inline': true })
     embed.fields.push({ 'name': 'Server Owner', 'value': `${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.owner.id})` })
     embed.fields.push({ 'name': 'Created on', 'value': guild.createdAt })
     embed.fields.push({ 'name': `Roles [${guild.roles.size}]`, 'value': 'roles!' })
