@@ -11,17 +11,31 @@ class commandServerInfo extends Command {
       guildOnly: true,
       examples: [
         'serverinfo'
+      ],
+      args: [
+        {
+          key: 'type',
+          prompt: 'Type the type of information you want to see.',
+          type: 'string',
+          default: ''
+        }
       ]
     })
   }
 
-  async run (msg) {
+  async run (msg, { type }) {
     const embed = {
       author: {},
       thumbnail: {},
       fields: []
     }
     let guild = msg.guild
+
+    if (type.toLowerCase() === 'roles') {
+      embed.title = `Roles [${guild.roles.size}]`
+      embed.description = guild.roles.sort((a, b) => a.position - b.position || 1).map(role => role.name).reverse().join(', ') || 'No roles'
+      return msg.channel.send({ embed })
+    }
 
     embed.author.name = guild.name
 
@@ -67,7 +81,7 @@ class commandServerInfo extends Command {
     embed.fields.push({ 'name': `Channels [${guild.channels.size}]`, 'value': channelData.join('\n'), 'inline': true })
     embed.fields.push({ 'name': 'Server Owner', 'value': `${guild.owner.user.username}#${guild.owner.user.discriminator} (${guild.owner.id})` })
     embed.fields.push({ 'name': 'Created on', 'value': guild.createdAt })
-    embed.fields.push({ 'name': `Roles [${guild.roles.size}]`, 'value': 'roles!' })
+    embed.fields.push({ 'name': `Roles [${guild.roles.size}]`, 'value': `To see a list of roles, use **${msg.guild.commandPrefix}serverinfo roles**.` })
 
     msg.channel.send({ embed })
   }
