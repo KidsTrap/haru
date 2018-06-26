@@ -40,7 +40,7 @@ class commandHelp extends Command {
 
         if (cmd.guildOnly) messages.push('Can only be used in guilds.')
         if (cmd.nsfw) messages.push('Can only be used in NSFW channels.')
-        if (cmd.aliases.length > 0) messages.push(`Aliases: ${cmd.aliases.join(', ')}`)
+        if (cmd.aliases.length > 0) messages.push(`Aliases: ${cmd.aliases.map(cmd => `\`${cmd}\``).join(' ')}`)
         if (cmd.format) messages.push(`Usage: \`${cmd.name} ${cmd.format}\` `)
 
         if (cmd.details) {
