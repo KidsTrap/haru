@@ -9,6 +9,7 @@ class commandSafebooru extends Command {
       memberName: 'safebooru',
       description: 'Search through Danbooru (safe version).',
       details: 'You can only search for two tags at a time\nSearching with the tags below however, doesn\'t count against the limit.\n`rating:safe` `status:deleted` `-status:deleted` `limit:200`\nFor help on tags, refer to <https://safebooru.donmai.us/wiki_pages/43043>',
+      nsfw: true,
       throttling: {
         usages: 1,
         duration: 2
