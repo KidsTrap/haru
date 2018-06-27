@@ -85,7 +85,7 @@ class commandUserInfo extends Command {
     if (user.presence.game) embed.description = `${userAvail}, ${userGame} ${userGameName}.`
 
     embed.thumbnail.url = user.displayAvatarURL
-    
+
     embed.fields.push({ 'name': 'User ID', 'value': user.id, 'inline': true })
     if (guildMember) embed.fields.push({ 'name': 'Nickname', 'value': guildMember.displayName, 'inline': true })
     embed.fields.push({ 'name': 'Account created at', 'value': user.createdAt, 'inline': true })

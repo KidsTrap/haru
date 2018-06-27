@@ -1,7 +1,5 @@
 const request = require('request-promise-native')
 const regexWebURL = require('../modules/re_weburl')
-const sql = require('sqlite')
-const path = require('path')
 
 module.exports = async (client, message) => {
   if (message.author.bot) return
