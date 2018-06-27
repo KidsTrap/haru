@@ -39,18 +39,16 @@ class commandManga extends Command {
     if (supportedProvider.indexOf(provider) > -1) {
       if (!searchterm) return msg.channel.send('You didn\'t specify a search term.')
 
-      data = await anifetch.search(provider, 'manga', searchterm)
+      data = await anifetch(provider, 'manga', searchterm)
         .catch(err => { throw new Error(err) })
     } else {
       searchterm = `${provider}${searchterm !== '' ? ` ${searchterm}` : ''}`
 
-      data = await anifetch.search('kitsu', 'manga', searchterm)
+      data = await anifetch('kitsu', 'manga', searchterm)
         .catch(err => { throw new Error(err) })
     }
 
-    data = await anifetch.commonfy(data)
-      .then(anifetch.DiscordEmbed)
-      .catch(err => { throw new Error(err) })
+    data = data.map(anifetch.DiscordEmbed)[0]
 
     msg.channel.send({ embed: data })
   }
