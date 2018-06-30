@@ -33,7 +33,7 @@ class commandManga extends Command {
 
   async run (msg, { provider, searchterm }) {
     let data
-    let supportedProvider = ['anilist', 'kitsu']
+    let supportedProvider = ['anilist', 'kitsu', 'myanimelist']
     provider = provider.toLowerCase()
 
     if (supportedProvider.indexOf(provider) > -1) {
