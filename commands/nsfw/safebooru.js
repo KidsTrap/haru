@@ -31,9 +31,21 @@ class commandSafebooru extends Command {
   }
 
   async run (msg, { tags }) {
+    let ignoredTag = ['loli', 'shota', 'toddlercon']
     let ignoredExt = ['zip']
     let imageExt = ['png', 'jpg', 'gif']
     let videoExt = ['mp4', 'webm']
+    let censored = false
+
+    tags.toLowerCase().split(' ').some(tag => {
+      if (ignoredTag.indexOf(tag) > -1) {
+        censored = true
+        return true
+      }
+      return false
+    })
+
+    if (censored) { return msg.reply('you are using a tag that is censored.') }
 
     let requestURL = 'https://safebooru.donmai.us/posts.json?'
     let requestParams = {
